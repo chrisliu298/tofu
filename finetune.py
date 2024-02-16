@@ -98,6 +98,13 @@ def main(cfg):
         )
 
     model = AutoModelForCausalLM.from_pretrained(model_id, use_flash_attention_2=model_cfg["flash_attention2"]=="true", torch_dtype=torch.bfloat16, trust_remote_code = True)
+    from transformers import GenerationConfig
+    model.generation_config = GenerationConfig()
+    model.generation_config.max_length = 200
+    model.generation_config.max_new_tokens = None
+    model.generation_config.do_sample = False
+    model.generation_config.use_cache = True
+    model.generation_config.pad_token_id = tokenizer.eos_token_id
     if model_cfg["gradient_checkpointing"] == "true":
         model.gradient_checkpointing_enable()
     
